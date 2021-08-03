@@ -1,0 +1,19 @@
+branch-defaults:
+  main:
+    environment: production
+environment-defaults:
+  production:
+    branch: main
+    repository: null
+global:
+  application_name: galivant
+  default_ec2_keyname: web-prod
+  default_platform: PHP 7.4 running on 64bit Amazon Linux 2
+  default_region: eu-west-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: idl-prod
+  sc: git
+  workspace_type: Application
