@@ -21,28 +21,34 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-            @if (Route::has('login'))
-                <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-                    @auth
-                        <a href="{{ url('/home') }}" class="text-sm text-gray-700 underline">Home</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm text-gray-700 underline">Log in</a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 underline">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
 
             <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
                 <h1>Galivant</h1>
 
-                <p>Galivant is a vagrant box hosting thing that backs on to Amazon S3.</p>
+                <h2>{{ $name }}</h2>
+                <p>{{ $description }}</p>
 
-                <p>Galivant cares not for your "index pages"</p>
+                <h3>Usage</h3>
+                <pre>
+config.vm.box = "{{ $name }}"
+config.vm.box_url = "{{ URL::to('/'.$name.'.json');}}"
+                </pre>
+
+                <h3>Versions &amp; Providers</h3>
+                <dl>
+                @foreach ($versions as $version)
+                    <dt>{{ $version['version'] }}</dt>
+                    <dd>{{ $version['description_html'] }}</dd>
+                    <dd>
+                        <ul>
+                        @foreach ($version['providers'] as $provider)
+                        <li>
+                            <a href="{{ $provider['url'] }}">{{ $provider['name']}}</a>
+                        </li>
+                        @endforeach
+                    </dd>
+                @endforeach
+                </dl>
             </div>
-        </div>
     </body>
 </html>

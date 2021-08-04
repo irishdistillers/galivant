@@ -18,4 +18,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/{boxclass}/{boxname}.json', [BoxController::class, 'show']);
+Route::get('/{boxclass}/{boxname}.json', [BoxController::class, 'list_versions_json']);
+Route::get('/{boxclass}/{boxname}', [BoxController::class, 'list_versions']);
+Route::get('/{boxclass}', [BoxController::class, 'list_boxes']);

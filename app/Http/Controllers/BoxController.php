@@ -3,60 +3,32 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Boxen;
 
 class BoxController extends Controller
 {
-    public function show($class, $boxid){
+    public function list_boxes($class){
+        $output = Boxen::list_boxes($class);
 
-        define("BOXES_BUCKET", env('VAGRANT_BOXES_BUCKET', ''));
+        return view('list_boxes', ['name' => $class, 'boxes' => $output ]);
 
-        $s3 = \AWS::createClient('s3', [ 'region' => "eu-west-1" ]);
-        $res = $s3->listObjectsV2(array(
-            'Bucket'     => BOXES_BUCKET,
-            'Prefix'     => "$class/$boxid",
-            // 'Key'        => 'YOUR_OBJECT_KEY',
-            // 'SourceFile' => '/the/path/to/the/file/you/are/uploading.ext',
-        ));
+    }
 
-        $output = [
-            "name" => "$class/$boxid",
-            "description" => "$class $boxid",
-            "versions"=> [
+    public function list_versions_json($class, $boxid){
 
-            ]
-        ];
 
-        $v = 0;
-
-        $versions = [];
-
-        foreach($res['Contents'] as $object){
-            $key = $object['Key'];
-            $filename = substr($key,0,-4);
-
-            $v++;
-            [$boxname, $provider, $date] = explode("_", $filename);
-            [$year, $month, $day] = explode('-', $date);
-            $version = implode(".", [intval($year), intval($month), intval($day)]);
-            $versions[$version]['version'] = $version;
-
-            $presign_cmd = $s3->getCommand('GetObject', [
-                'Bucket' => BOXES_BUCKET,
-                'Key' => $key
-            ]);
-            $presigned = $s3->createPresignedRequest($presign_cmd, '+10 minutes');
-
-            $versions[$version]['providers'] = [
-                'name' => $provider,
-                'url'  => (string)$presigned->getUri()
-            ];
-        }
-
-        foreach($versions as $version){
-            $output['versions'][] = $version;
-        }
+        $output = Boxen::list_versions($class, $boxid);
 
         return response()->json($output);
+
+    }
+
+    public function list_versions($class, $boxid){
+
+
+        $output = Boxen::list_versions($class, $boxid);
+
+        return view('list_versions', $output);
 
     }
 }
